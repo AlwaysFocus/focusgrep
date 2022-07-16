@@ -1,15 +1,28 @@
 use std::env;
+use std::error::Error;
 use std::fs;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    let config = parse_config(&args);
+    let config = Config::new(&args).unwrap_or_else(|err| {
+        println!("Problem parsing arguments: {}", err);
+        std::process::exit(1);
+    });
 
-    println!("Searching for {} in {}", query, filename);
-    let contents: String =
-        fs::read_to_string(filename).expect("Something went wrong trying to read the file...");
+    if let Err(e) = run(config) {
+        println!("Application error: {}", e);
+        std::process::exit(1);
+    };
+}
+
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    println!("Searching for {} in {}", config.query, config.filename);
+
+    let contents: String = fs::read_to_string(config.filename)?;
     println!("Retrieved contents: \n {}", contents);
+
+    Ok(())
 }
 
 struct Config {
@@ -17,13 +30,18 @@ struct Config {
     filename: String,
 }
 
-fn parse_config(args: &[String]) -> Config {
-    // We will modify this to use lifetimes instead of cloning later on.
-    let query = args[1].clone();
-    let filename = args[2].clone();
+impl Config {
+    fn new(args: &[String]) -> Result<Config, &str> {
+        if args.len() < 3 {
+            return Err("not enough arguments");
+        }
+        // We will modify this to use lifetimes instead of cloning later on.
+        let query = args[1].clone();
+        let filename = args[2].clone();
 
-    Config {
-        query: query.to_string(),
-        filename: filename.to_string(),
+        Ok(Config {
+            query: query.to_string(),
+            filename: filename.to_string(),
+        })
     }
 }
