@@ -1,0 +1,7 @@
+Hey this is a poem,
+I'm not sure what it is about,
+But hey it's pretty good,
+
+To find out what it is about,
+with a cool tool called focusgrep,
+I'm going to use it to find out.
