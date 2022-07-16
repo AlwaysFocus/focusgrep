@@ -34,7 +34,6 @@ impl Config {
             return Err("not enough arguments");
         }
 
-        // We will modify this to use lifetimes instead of cloning later on.
         let query = args[1].clone();
         let filename = args[2].clone();
 
